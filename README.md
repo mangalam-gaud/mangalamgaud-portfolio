@@ -89,4 +89,9 @@ optional; `facts` is optional and prints as the last line of the résumé entry.
   prints the full description and every highlight.
 - **Content**: all copy lives in `src/data.ts`. Project images are real screenshots for
   live projects and typographic case-study plates for the rest — no mock screenshots.
+- **Link previews**: `scripts/prerender-meta.mjs` runs after `vite build` and writes one
+  static HTML per route (`dist/projects/<id>/index.html`, `dist/about/index.html`, …) with
+  that page's title, description and share image. Social crawlers read those files without
+  running JS; Vercel serves them before the SPA rewrite, so routing is unchanged. Titles
+  and images come from `src/lib/meta.ts`, the same module the running app uses.
 - **Privacy**: frontend-only. No analytics, no backend, no API keys, no stored input.

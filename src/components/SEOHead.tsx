@@ -1,72 +1,21 @@
 "use client";
 
 import { useEffect } from "react";
-import { projects, profile, siteUrl } from "@/data";
-
-const routeData: Record<string, { title: string; desc: string; type: "WebSite" | "ProfilePage" | "CollectionPage" }> = {
-  "/": {
-    title: "Mangalam Gaud | Software Developer — Cybersecurity · Full-stack · IoT",
-    desc: "Portfolio of Mangalam Gaud, B.Sc. IT student in Mumbai. Full-stack systems, security tooling and embedded/IoT prototypes, including Drishtipath assistive navigation and Stratavex mine-safety monitoring.",
-    type: "WebSite",
-  },
-  "/about": {
-    title: "About Mangalam Gaud | Professional Profile",
-    desc: "B.Sc. Information Technology student with experience in Java, PHP, React, Node.js, AWS, ESP32, and assistive technology. Team lead for Drishtipath, CIIE AI Innovation first place.",
-    type: "ProfilePage",
-  },
-  "/skills": {
-    title: "Skills & Tools | Mangalam Gaud",
-    desc: "Programming, Web & Backend, Databases, Cloud & Systems, Embedded & IoT, and Tools. 3D interactive skill constellation.",
-    type: "ProfilePage",
-  },
-  "/projects": {
-    title: "Selected Projects | Mangalam Gaud",
-    desc: "Mangaud CollegeHub, Smart-Influencing, Mangaud Banking Console, Smart-Influencing AWS architecture, and more. Full-stack and embedded/IoT projects.",
-    type: "CollectionPage",
-  },
-  "/experience": {
-    title: "Experience & Leadership | Mangalam Gaud",
-    desc: "Tutor at Keshavi Tutorial, IndiaNext Hackathon committee, Civil Defence Corps volunteer, Drishtipath team lead.",
-    type: "ProfilePage",
-  },
-  "/education": {
-    title: "Education | Mangalam Gaud",
-    desc: "B.Sc. Information Technology (TY) at K.E.S. Shroff College, Mumbai. Expected 2027. Semester 4 SGPA 9.01.",
-    type: "ProfilePage",
-  },
-  "/contact": {
-    title: "Contact Mangalam Gaud | Software Developer",
-    desc: "Open to internships, entry-level roles, and collaborations. Email, phone, LinkedIn, Instagram, GitHub and location.",
-    type: "ProfilePage",
-  },
-} as const;
+import { profile, siteUrl } from "@/data";
+import { buildMeta, isKnownPath } from "@/lib/meta";
 
 export function SEOHead({ pathname }: { pathname: string }) {
-  let data = routeData[pathname as keyof typeof routeData];
-
-  // Dynamic meta for /projects/:id — title/desc follow the specific project
-  if (!data && pathname.startsWith("/projects/")) {
-    const project = projects.find((p) => p.id === pathname.split("/")[2]);
-    if (project) {
-      data = {
-        title: `${project.title} | Mangalam Gaud`,
-        desc: `${project.subtitle} Built with ${project.stack.join(", ")}.`,
-        type: "ProfilePage",
-      };
-    }
-  }
-
-  const resolved = data ?? routeData["/"];
-  const isKnownRoute = Boolean(data);
+  const { title, desc, type, image, imageWidth, imageHeight } = buildMeta(pathname);
+  const isKnownRoute = isKnownPath(pathname);
 
   const jsonLd = JSON.stringify({
     "@context": "https://schema.org",
-    "@type": resolved.type,
+    "@type": type,
     name: "Mangalam Rajkeshkar Gaud",
-    title: resolved.title,
-    description: resolved.desc,
+    title,
+    description: desc,
     url: `${siteUrl}${pathname}`,
-    image: `${siteUrl}/og.png`,
+    image,
     sameAs: [profile.github, profile.linkedin, profile.instagram, profile.x],
     jobTitle: "Software Developer",
     alumniOf: {
@@ -83,7 +32,7 @@ export function SEOHead({ pathname }: { pathname: string }) {
   });
 
   useEffect(() => {
-    document.title = resolved.title;
+    document.title = title;
 
     const setMeta = (name: string, content: string, attr: "name" | "property" = "name") => {
       let el = document.querySelector(`meta[${attr}="${name}"]`);
@@ -95,7 +44,7 @@ export function SEOHead({ pathname }: { pathname: string }) {
       el.setAttribute("content", content);
     };
 
-    setMeta("description", resolved.desc);
+    setMeta("description", desc);
     setMeta("author", "Mangalam Rajkeshkar Gaud");
     setMeta("theme-color", "#07080a");
     // Soft 404: keep unknown paths out of the index.
@@ -103,16 +52,16 @@ export function SEOHead({ pathname }: { pathname: string }) {
     setMeta("og:type", "website", "property");
     setMeta("og:site_name", "Mangalam Gaud", "property");
     setMeta("og:url", `${siteUrl}${pathname}`, "property");
-    setMeta("og:title", resolved.title, "property");
-    setMeta("og:description", resolved.desc, "property");
-    setMeta("og:image", `${siteUrl}/og.png`, "property");
-    setMeta("og:image:width", "1200", "property");
-    setMeta("og:image:height", "630", "property");
+    setMeta("og:title", title, "property");
+    setMeta("og:description", desc, "property");
+    setMeta("og:image", image, "property");
+    setMeta("og:image:width", String(imageWidth), "property");
+    setMeta("og:image:height", String(imageHeight), "property");
     setMeta("og:image:alt", `${profile.name} — ${profile.title}`, "property");
     setMeta("twitter:card", "summary_large_image");
-    setMeta("twitter:title", resolved.title);
-    setMeta("twitter:description", resolved.desc);
-    setMeta("twitter:image", `${siteUrl}/og.png`);
+    setMeta("twitter:title", title);
+    setMeta("twitter:description", desc);
+    setMeta("twitter:image", image);
     setMeta("twitter:image:alt", `${profile.name} — ${profile.title}`);
 
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
@@ -130,7 +79,7 @@ export function SEOHead({ pathname }: { pathname: string }) {
       document.head.appendChild(script);
     }
     script.textContent = jsonLd;
-  }, [pathname, resolved.title, resolved.desc, jsonLd, isKnownRoute]);
+  }, [pathname, title, desc, image, imageWidth, imageHeight, jsonLd, isKnownRoute]);
 
   return null;
 }
