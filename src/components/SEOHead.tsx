@@ -6,7 +6,7 @@ import { projects, profile, siteUrl } from "@/data";
 const routeData: Record<string, { title: string; desc: string; type: "WebSite" | "ProfilePage" | "CollectionPage" }> = {
   "/": {
     title: "Mangalam Gaud | Software Developer — Cybersecurity · Full-stack · IoT",
-    desc: "Portfolio of Mangalam Gaud, B.Sc. IT student in Mumbai. Full-stack systems, security tooling and embedded/IoT prototypes, including Drishtipath assistive railway guidance.",
+    desc: "Portfolio of Mangalam Gaud, B.Sc. IT student in Mumbai. Full-stack systems, security tooling and embedded/IoT prototypes, including Drishtipath assistive navigation and Stratavex mine-safety monitoring.",
     type: "WebSite",
   },
   "/about": {
@@ -21,7 +21,7 @@ const routeData: Record<string, { title: string; desc: string; type: "WebSite" |
   },
   "/projects": {
     title: "Selected Projects | Mangalam Gaud",
-    desc: "Mangaud CollegeHub, Smart-Influencing, Mangaud Banking Console, Drishtipath AWS architecture, and more. Full-stack and embedded/IoT projects.",
+    desc: "Mangaud CollegeHub, Smart-Influencing, Mangaud Banking Console, Smart-Influencing AWS architecture, and more. Full-stack and embedded/IoT projects.",
     type: "CollectionPage",
   },
   "/experience": {
@@ -101,6 +101,7 @@ export function SEOHead({ pathname }: { pathname: string }) {
     // Soft 404: keep unknown paths out of the index.
     setMeta("robots", isKnownRoute ? "index,follow" : "noindex,follow");
     setMeta("og:type", "website", "property");
+    setMeta("og:site_name", "Mangalam Gaud", "property");
     setMeta("og:url", `${siteUrl}${pathname}`, "property");
     setMeta("og:title", resolved.title, "property");
     setMeta("og:description", resolved.desc, "property");
