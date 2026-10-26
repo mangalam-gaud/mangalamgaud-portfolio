@@ -1,0 +1,206 @@
+@import "tailwindcss";
+
+@theme {
+  /* Graphite base — surfaces are separated by ~4% luminance so they read on
+     real panels, not just OLED. One signal accent; no cyan/purple gradient. */
+  --color-bg: #07080a;
+  --color-surface: #0e1013;
+  --color-surface-2: #15181d;
+  --color-text: #e9edf2;
+  --color-text-muted: #98a2b0;
+  --color-text-dim: #7a8695;
+  --color-accent: #c9f24d;
+  --color-accent-2: #7ee7c7;
+  --color-accent-glow: rgba(201, 242, 77, 0.22);
+  --color-border: #212630;
+  --color-border-strong: #2f3641;
+
+  --radius: 6px;
+  --radius-lg: 10px;
+  --transition: 180ms cubic-bezier(0.2, 0.6, 0.2, 1);
+
+  --font-sans: "Space Grotesk Variable", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  --font-display: "Space Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo,
+    Consolas, monospace;
+}
+
+/* Element resets must live in the base layer — unlayered CSS would beat
+   Tailwind utilities (e.g. killing bg-accent on buttons). */
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    /* Technical grid + a single cool wash at the top. Canvas sits above this. */
+    background-image:
+      radial-gradient(1100px 620px at 50% -12%, rgba(201, 242, 77, 0.06), transparent 68%),
+      linear-gradient(to right, rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+    background-size: 100% 100%, 72px 72px, 72px 72px;
+    background-attachment: fixed, fixed, fixed;
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01" 1;
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+
+  canvas {
+    display: block;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+}
+
+@layer components {
+  /* Mono metadata is the core of the technical-editorial voice. */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .mono-label {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-text-dim);
+  }
+
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+
+  .hairline {
+    border-top: 1px solid var(--color-border);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border: 2px solid var(--color-bg);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-dim);
+}
+
+/* Skip-to-content link — visible on keyboard focus */
+.skip-to-content {
+  position: absolute;
+  top: -48px;
+  left: 0;
+  z-index: 100;
+  padding: 8px 16px;
+  background: var(--color-accent);
+  color: var(--color-bg);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  border-radius: 0 0 var(--radius) 0;
+  transition: top 0.2s ease;
+  text-decoration: none;
+}
+
+.skip-to-content:focus {
+  top: 0;
+  outline: none;
+}
+
+/* Focus-visible ring for interactive elements */
+*:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* Marquee for recognition strip */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 24s linear infinite;
+}
+
+/* Boot screen progress fill */
+@keyframes boot-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Line-clamp utility */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+/* Hide scroll progress / cursor on print */
+@media print {
+  .ScrollProgress, [data-cursor] { display: none !important; }
+}
+
+/* Résumé document fonts. The PNG capture skips web fonts, so the résumé must
+   already use system fonts: otherwise the clone falls back and mangles
+   ligatures (an "fi" came out oversized). Helvetica also matches the PDF. */
+.resume-doc,
+.resume-doc h1,
+.resume-doc h2,
+.resume-doc h3 {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.resume-doc .font-mono {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
