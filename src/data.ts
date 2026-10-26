@@ -229,7 +229,7 @@ export const projects = [
     stack: ["AWS EC2", "VPC", "IAM", "Linux"],
     image: "/projects/aws-arch.jpg",
     facts: "Public/private subnets · IAM · NAT",
-    link: "https://github.com/mangalam-gaud/Smart-Influencing",
+    link: "",
     featured: false,
     description:
       "VPC with a public-facing web server and a backend/database server isolated in a private subnet.",
